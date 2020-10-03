@@ -1,0 +1,12 @@
+---
+
+- hosts: graylog
+  remote_user: root
+  become: yes
+
+  roles:
+    - java
+    - pwgen
+    - mongodb
+    - elasticsearch
+    - graylog

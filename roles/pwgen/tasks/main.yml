@@ -1,0 +1,18 @@
+---
+# tasks file for pwgen
+
+- name: Upgrade all packages
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install the epel-release rpm from a remote repo
+  dnf:
+    name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm'
+    state: present
+
+
+- name: Install the latest version of Epel and pwgen
+  dnf:
+    name: pwgen
+    state: latest

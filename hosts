@@ -1,0 +1,2 @@
+[graylog]
+rhelvm ansible_host=172.28.26.163

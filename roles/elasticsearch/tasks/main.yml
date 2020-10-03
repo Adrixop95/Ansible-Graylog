@@ -1,0 +1,52 @@
+---
+# tasks file for elasticsearch
+- name: Import an elasticsearch key from a url
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Create elasticsearch repo yum file
+  copy:
+    dest: "/etc/yum.repos.d/elasticsearch.repo"
+    content: |
+        [elasticsearch-6.x]
+        name=Elasticsearch repository for 6.x packages
+        baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
+        gpgcheck=1
+        gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        enabled=1
+        autorefresh=1
+        type=rpm-md
+
+- name: Install the latest version of elasticsearch
+  dnf:
+    name: elasticsearch-oss
+    state: latest
+
+- name: Edit elasticsearch.yml
+  shell: |
+        tee -a /etc/elasticsearch/elasticsearch.yml > /dev/null <<EOT
+        cluster.name: graylog
+        action.auto_create_index: false
+        EOT
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Enable service elasticsearch.service and ensure it is not masked
+  systemd:
+    name: elasticsearch.service
+    enabled: yes
+    masked: no
+
+- name: Make sure a service elasticsearch.service is running
+  systemd:
+    state: started
+    name: elasticsearch.service
+
+- name: Restart service elasticsearch.service
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: elasticsearch.service

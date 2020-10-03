@@ -1,0 +1,64 @@
+---
+# tasks file for graylog
+
+- name: Install the graylog-3.3 rpm from a remote repo
+  dnf:
+    name: 'https://packages.graylog2.org/repo/packages/graylog-3.3-repository_latest.rpm'
+    state: present
+
+- name: Upgrade all packages
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install graylog server files
+  dnf:
+    name: 
+        - graylog-server
+        - graylog-integrations-plugins
+    state: latest
+
+- name: Replace password_secret in Graylog server.conf
+  replace:
+      path: /etc/graylog/server/server.conf
+      regexp: 'password_secret ='
+      replace: "password_secret = {{ password_secret }}"
+
+- name: Replace root_password_sha2 in Graylog server.conf
+  replace:
+      path: /etc/graylog/server/server.conf
+      regexp: 'root_password_sha2 ='
+      replace: "root_password_sha2 = {{ root_password_sha2 }}"
+
+- name: Replace http_bind_address in Graylog server.conf
+  replace:
+      path: /etc/graylog/server/server.conf
+      regexp: '#http_bind_address = 127.0.0.1:9000'
+      replace: "http_bind_address = {{ http_bind_address }}"
+
+- name: Replace http_publish_uri in Graylog server.conf
+  replace:
+      path: /etc/graylog/server/server.conf
+      regexp: '#http_publish_uri = http://192.168.1.1:9000/'
+      replace: "http_publish_uri = {{ http_publish_uri }}"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Enable service mongod.service and ensure it is not masked
+  systemd:
+    name: graylog-server.service
+    enabled: yes
+    masked: no
+
+- name: Make sure a service mongod.service is running
+  systemd:
+    state: started
+    name: graylog-server.service
+
+- name: Permit traffic in default zone on port 9000, needs ansible.posix plugin
+  ansible.posix.firewalld:
+    port: 9000/tcp
+    permanent: yes
+    state: enabled

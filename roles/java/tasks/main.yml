@@ -1,0 +1,12 @@
+---
+# tasks file for java
+
+- name: Upgrade all packages
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install the latest version of OpenJDK 1.8.0 headless
+  dnf:
+    name: java-1.8.0-openjdk-headless.x86_64
+    state: latest
