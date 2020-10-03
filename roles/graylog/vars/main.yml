@@ -1,6 +1,6 @@
 ---
 # vars file for graylog
 root_password_sha2: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8 # password
-http_bind_address: 172.28.26.163:9000
-http_publish_uri: http://172.28.26.163:9000/
+http_bind_address: 172.28.24.47:9000
+http_publish_uri: http://172.28.24.47:9000/
 password_secret: passwordpassword123456789
